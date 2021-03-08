@@ -1,0 +1,245 @@
+<MainScreenWidget>:
+    id: main
+    orientation: 'vertical'
+    background_color: (0, 255, 255, 1)
+    ScreenWidget:
+        do_scroll_x: True
+        do_scroll_y: True
+        bar_width: 5
+        BoxLayout:
+            id: mainbox
+            orientation: 'vertical'
+            BoxLayout:
+                id: topsection
+                orientation: 'vertical'
+                size_hint: None, None
+                size: 1000, 250
+                BoxLayout:
+                    id: textandimagesection
+                    orientation: 'horizontal'
+                    size_hint: None, None
+                    size: 1000, 200
+                    BoxLayout:
+                        id: textsection
+                        orientation: 'vertical'
+                        size_hint: None, None
+                        size: 700, 200
+                        Label:
+                            id: mainlabel
+                            text: "Sample ID QR Generator"
+                            font_size: 36
+                            valign: 'top'
+                            halign: 'left'
+                            text_size: self.size
+                            padding: 20, 20
+                            size: 700, 50
+                            background_color: (25, 255, 0, 1)
+                        Label:
+                            id: sublabel
+                            text: "Instructions...blah, blah, blah\nmore - blah blah\nUS EPA - Office of Research and Development?"
+                            valign: 'top'
+                            halign: 'left'
+                            text_size: self.size
+                            padding: 30, 0
+                            size: 700, 150
+                            background_color: (35, 255, 0, 1)
+                    BoxLayout:
+                        id: border
+                        orientation: 'vertical'
+                        size_hint: None, None
+                        size: 1, 200
+                        canvas.before:
+                            Color:
+                                rgba: (0,1,1,1)
+                            Line:
+                                width: 1.1
+                                rectangle: self.x, self.y, self.width, self.height
+                    BoxLayout:
+                        id: imagelabelandbuttonssection
+                        orientation: 'vertical'
+                        size_hint: None, None
+                        size: 300, 200
+                        Label:
+                            id: imagelabel
+                            text: "Preview"
+                            text_size: self.size
+                            size: 300, 25
+                            padding: 5, 0
+                            halign: 'left'
+                        BoxLayout:
+                            id: imageandbuttonsection
+                            orientation: 'horizontal'
+                            size_hint: None, None
+                            size: 300, 175
+                            FloatLayout:
+                                id: leftbuttonfloat
+                                size_hint: None, None
+                                size: 50, 30
+                                Button:
+                                    id: leftpreviewbutton
+                                    size_hint: None, None
+                                    size: 50, 30
+                                    pos: 701, 375
+                                    text: "<"
+                                    on_release: root.preview_left();
+                            Image:
+                                id: previewimage
+                                source: ''
+                                size_hint: None, None
+                                size: 200, 175
+                            FloatLayout:
+                                id: rightbuttonfloat
+                                size_hint: None, None
+                                size: 50, 30
+                                Button:
+                                    id: rightpreviewbutton
+                                    size_hint: None, None
+                                    size: 50, 30
+                                    pos: 950, 375
+                                    text: ">"
+                                    on_release: root.preview_right();
+                BoxLayout:
+                    id: border2
+                    orientation: 'horizontal'
+                    size_hint: None, None
+                    size: 1000, 1
+                    canvas.before:
+                        Color:
+                            rgba: (0,1,1,1)
+                        Line:
+                            width: 1.1
+                            rectangle: self.x, self.y, self.width, self.height
+                BoxLayout:
+                    id: checkboxessection
+                    orientation: 'horizontal'
+                    size_hint: None, None
+                    size: 1000, 50
+                    Label:
+                        text: "ID Format:"
+                        size_hint: None, None
+                        size: 100, 50
+                    Spinner:
+                        id: idformat
+                        size_hint: None, None
+                        size: 200, 50
+                        text: ''
+                        values: '', 'Insert Letter', 'Insert Number'
+                    Label:
+                        text: "ID Sequence:"
+                        size_hint: None, None
+                        size: 100, 50
+                    Spinner:
+                        id: idsequence
+                        size_hint: None, None
+                        size: 200, 50
+                        text: ''
+                        values: '', 'Sequential', 'Random'
+                    FloatLayout:
+                        id: addremovesection
+                        #orientation: 'horizontal'
+                        size_hint: None, None
+                        size: 400, 50
+                        Button:
+                            text: "Add Row"
+                            size_hint: None, None
+                            size: 70, 30
+                            pos: 920, 270
+                            on_release: root.add_row();
+                        Button:
+                            text: "Remove Row"
+                            size_hint: None, None
+                            size: 100, 30
+                            pos: 890, 240
+                            on_release: root.remove_row();
+            ScreenWidget:
+                do_scroll_x: False
+                do_scroll_y: True
+                bar_width: 5
+                size_hint: None, None
+                size: 1000, 200
+                StackLayout:
+                    id: middlesection
+                    orientation: 'tb-lr'
+                    size_hint: None, None
+                    size: 1000, 1050
+            FloatLayout:
+                id: bottomsection
+                #orientation: 'horizontal'
+                size_hint: None, None
+                size: 1000, 50
+                Label:
+                    id: numberheader
+                    text: "#"
+                    size_hint: None, None
+                    size: 45, 50
+                    pos: 170, 200
+                Button:
+                    id: previewbutton
+                    text: "Preview"
+                    font_size: 13
+                    color: (0, 0, 0, 1)
+                    background_color: (255, 255, 255, 1)
+                    size_hint: None, None
+                    size: 150, 50
+                    pos: 645, 5
+                    on_release: root.set_preview();
+                Button:
+                    id: createbutton
+                    text: "Create"
+                    font_size: 13
+                    color: (0, 0, 0, 1)
+                    background_color: (255, 255, 255, 1)
+                    size_hint: None, None
+                    size: 150, 50
+                    pos: 800, 5
+                    on_release: root.create();
+
+<RowWidget>:
+    orientation: 'lr-tb'
+    size_hint: None, None
+    size: 1000, 50
+    padding: 120, 40
+    spacing: 10
+    Label:
+        id: rownumber
+        text: "1"
+        size_hint: None, None
+        size: 40, 50
+    TextInput:
+        id: numberfield
+        text: "1"
+        size_hint: None, None
+        size: 45, 50
+        input_filter: 'int'
+    TextInput:
+        id: field1
+        text: "Sponge"
+        size_hint: None, None
+        size: 200, 50
+    TextInput:
+        id: field2
+        text: "2.2.21"
+        size_hint: None, None
+        size: 200, 50
+    TextInput:
+        id: field3
+        text: "AnCOR"
+        size_hint: None, None
+        size: 200, 50
+
+<ExitWidget>:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        Button:
+            id: exit_widget
+            text: "Yes"
+            size_hint: None, None
+            size: 195, 70
+            on_release: root.confirm_exit()
+            on_release: root.exit_widget_popup.dismiss()
+        Button:
+            text: "No"
+            size_hint: None, None
+            size: 195, 70
+            on_release: root.exit_widget_popup.dismiss()
