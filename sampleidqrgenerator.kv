@@ -122,8 +122,8 @@
                         id: idformat
                         size_hint: None, None
                         size: 200, 50
-                        text: ''
-                        values: '', 'Insert Letter', 'Insert Number'
+                        text: 'No ID'
+                        values: 'No ID', 'Insert Letter', 'Insert Number'
                     Label:
                         text: "ID Sequence:"
                         size_hint: None, None
@@ -132,8 +132,8 @@
                         id: idsequence
                         size_hint: None, None
                         size: 200, 50
-                        text: ''
-                        values: '', 'Sequential', 'Random'
+                        text: 'Sequential'
+                        values: 'Sequential', 'Random'
                     FloatLayout:
                         id: addremovesection
                         #orientation: 'horizontal'
@@ -151,28 +151,59 @@
                             size: 100, 30
                             pos: 890, 240
                             on_release: root.remove_row();
-            ScreenWidget:
-                do_scroll_x: False
-                do_scroll_y: True
-                bar_width: 5
+                        Button:
+                            text: "Add Column"
+                            size_hint: None, None
+                            size: 100, 30
+                            pos: 10, 210
+                            on_release: root.add_col();
+                        Button:
+                            text: "Remove Column"
+                            size_hint: None, None
+                            size: 120, 30
+                            pos: 10, 180
+                            on_release: root.remove_col();
+            BoxLayout:
+                id: boxlayoutformiddlesection
+                orientation: 'horizontal'
                 size_hint: None, None
                 size: 1000, 200
-                StackLayout:
-                    id: middlesection
-                    orientation: 'tb-lr'
+                Label:
+                    id: justplaceholder
                     size_hint: None, None
-                    size: 1000, 1050
+                    size: 135, 200
+                ScreenWidget:
+                    do_scroll_x: True
+                    do_scroll_y: True
+                    bar_width: 5
+                    size_hint: None, None
+                    size: 865, 190
+                    StackLayout:
+                        id: middlesection
+                        orientation: 'tb-lr'
+                        size_hint: None, None
+                        size: 4175, 1050
             FloatLayout:
                 id: bottomsection
                 #orientation: 'horizontal'
                 size_hint: None, None
                 size: 1000, 50
-                Label:
-                    id: numberheader
-                    text: "#"
+                Button:
+                    id: uploadbutton
+                    text: "Upload"
+                    font_size: 13
+                    color: (0, 0, 0, 1)
+                    background_color: (255, 255, 255, 1)
                     size_hint: None, None
-                    size: 45, 50
-                    pos: 170, 200
+                    size: 150, 50
+                    pos: 15, 5
+                    on_release: root.upload();
+                Label:
+                    id: uploadedfilename
+                    text: "No file uploaded."
+                    size_hint: None, None
+                    size: 150, 50
+                    pos: 155, 5
                 Button:
                     id: previewbutton
                     text: "Preview"
@@ -197,20 +228,30 @@
 <RowWidget>:
     orientation: 'lr-tb'
     size_hint: None, None
-    size: 1000, 50
-    padding: 120, 40
+    size: 4175, 50
+    padding: 0, 20
     spacing: 10
     Label:
         id: rownumber
         text: "1"
         size_hint: None, None
         size: 40, 50
-    TextInput:
-        id: numberfield
-        text: "1"
+    BoxLayout:
+        id: headerandnumbersection
+        orientation: 'vertical'
         size_hint: None, None
         size: 45, 50
-        input_filter: 'int'
+        Label:
+            id: numberheader
+            text: "#"
+            size_hint: None, None
+            size: 45, 20
+        TextInput:
+            id: numberfield
+            text: "1"
+            size_hint: None, None
+            size: 45, 30
+            input_filter: 'int'
     TextInput:
         id: field1
         text: "Sponge"
@@ -226,6 +267,12 @@
         text: "AnCOR"
         size_hint: None, None
         size: 200, 50
+
+<ColWidget>:
+    id: newcol
+    text: ""
+    size_hint: None, None
+    size: 200, 50
 
 <ExitWidget>:
     orientation: 'vertical'
