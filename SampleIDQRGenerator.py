@@ -105,11 +105,13 @@ class MainScreenWidget(BoxLayout):
     def set_preview(self):
         i = 0
         for row in self.text_input_array:
-            text_input1 = row[1].text
-            text_input2 = row[2].text
-            text_input3 = row[3].text
-
-            qr_code_text = f"{text_input1}-{text_input2}-{text_input3}"
+            qr_code_text = ""
+            for col in row:
+                if col == row[0]: continue
+                if col == row[1]:
+                    qr_code_text = f"{col.text}"
+                else:
+                    qr_code_text = f"{qr_code_text}-{col.text}"
 
             # checkboxes
             id_format_spinner = self.ids.idformat
@@ -172,15 +174,17 @@ class MainScreenWidget(BoxLayout):
 
     def create(self):
         for row in self.text_input_array:
-            text_input1 = row[1].text
-            text_input2 = row[2].text
-            text_input3 = row[3].text
-
             # get # of codes to make and then run creation that many times
             num_codes = int(row[0].children[0].text)
 
             for _ in range(num_codes):
-                qr_code_text = f"{text_input1}-{text_input2}-{text_input3}"
+                qr_code_text = ""
+                for col in row:
+                    if col == row[0]: continue
+                    if col == row[1]:
+                        qr_code_text = f"{col.text}"
+                    else:
+                        qr_code_text = f"{qr_code_text}-{col.text}"
 
                 # handle checkboxes
                 id_format_spinner = self.ids.idformat
@@ -275,12 +279,12 @@ class MainScreenWidget(BoxLayout):
 
             # add a col to each row widget and to each row in text_input_array
             array_of_curr_rows = self.ids.middlesection.children
-            i = 0
+            i = len(self.text_input_array) - 1
             for row in array_of_curr_rows:
                 new_col = ColWidget()
                 row.add_widget(new_col)  # add to ui
                 self.text_input_array[i].append(new_col)  # add to internal array
-                i += 1
+                i -= 1
 
     def remove_col(self):
         if self.col_count - 1 != 3:  # doesn't remove anything if only 4 col are left
