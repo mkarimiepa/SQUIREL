@@ -11,11 +11,11 @@ import os
 import qrcode
 import random
 
+from datetime import datetime
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-
-import threading
 
 # Import GUI packages
 from kivy.app import App
@@ -25,6 +25,10 @@ from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
 from kivy.uix.textinput import TextInput
+
+# Import Tkinter packages for file chooser
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 # Set setup variables
 os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
@@ -41,6 +45,7 @@ class MainScreenWidget(BoxLayout):
     text_input_array = []
     used_random_values_array = []
     preview_images_array = [''] * 100
+    uploaded_file_path = None
     letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
                     "U", "V", "W", "X", "Y", "Z", 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK',
                     'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA',
@@ -173,74 +178,118 @@ class MainScreenWidget(BoxLayout):
         self.curr_preview_img_index = i  # the current preview image displayed is the last one that was created
 
     def create(self):
-        for row in self.text_input_array:
-            # get # of codes to make and then run creation that many times
-            num_codes = int(row[0].children[0].text)
+        if self.uploaded_file_path is None or self.uploaded_file_path == "":
+            t = datetime.now()
+            csv_file_name = f"SampleIDQRCodes-{t.year}-{t.month}-{t.day}-{t.hour}_{t.minute}_{t.second}.csv"
+            for row in self.text_input_array:
+                # get # of codes to make and then run creation that many times
+                num_codes = int(row[0].children[0].text)
 
-            for _ in range(num_codes):
-                qr_code_text = ""
-                for col in row:
-                    if col == row[0]: continue
-                    if col == row[1]:
-                        qr_code_text = f"{col.text}"
-                    else:
-                        qr_code_text = f"{qr_code_text}-{col.text}"
+                for _ in range(num_codes):
+                    qr_code_text = ""
+                    for col in row:
+                        if col == row[0]: continue
+                        if col == row[1]:
+                            qr_code_text = f"{col.text}"
+                        else:
+                            qr_code_text = f"{qr_code_text}-{col.text}"
 
-                # handle checkboxes
-                id_format_spinner = self.ids.idformat
-                id_sequential_spinner = self.ids.idsequence
+                    # handle checkboxes
+                    id_format_spinner = self.ids.idformat
+                    id_sequential_spinner = self.ids.idsequence
 
-                if id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Sequential":
-                    if "#id" in qr_code_text:  # replace user placeholder '#id' w/number
-                        qr_code_text = qr_code_text.replace("#id", f"{self.number_count}")
-                    else:
-                        qr_code_text = f"{qr_code_text}-{self.number_count}"
-                    self.number_count += 1
-                elif id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Random":
-                    rand_num = int(random.uniform(1, 1000))
-                    while rand_num in self.used_random_values_array:
+                    if id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Sequential":
+                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/number
+                            qr_code_text = qr_code_text.replace("#id", f"{self.number_count}")
+                        else:
+                            qr_code_text = f"{qr_code_text}-{self.number_count}"
+                        self.number_count += 1
+                    elif id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Random":
                         rand_num = int(random.uniform(1, 1000))
-                    self.used_random_values_array.append(rand_num)
-                    if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand num
-                        qr_code_text = qr_code_text.replace("#id", f"{rand_num}")
-                    else:
-                        qr_code_text = f"{qr_code_text}-{rand_num}"
-                if id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Sequential":
-                    if "#id" in qr_code_text:  # replace user placeholder '#id' w/letter
-                        qr_code_text = qr_code_text.replace("#id", f"{self.letter_array[self.letter_count]}")
-                    else:
-                        qr_code_text = f"{qr_code_text}-{self.letter_array[self.letter_count]}"
-                    self.letter_count += 1
-                elif id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Random":
-                    rand_letter = random.choice(self.letter_array)
-                    while rand_letter in self.used_random_values_array:
+                        while rand_num in self.used_random_values_array:
+                            rand_num = int(random.uniform(1, 1000))
+                        self.used_random_values_array.append(rand_num)
+                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand num
+                            qr_code_text = qr_code_text.replace("#id", f"{rand_num}")
+                        else:
+                            qr_code_text = f"{qr_code_text}-{rand_num}"
+                    if id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Sequential":
+                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/letter
+                            qr_code_text = qr_code_text.replace("#id", f"{self.letter_array[self.letter_count]}")
+                        else:
+                            qr_code_text = f"{qr_code_text}-{self.letter_array[self.letter_count]}"
+                        self.letter_count += 1
+                    elif id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Random":
                         rand_letter = random.choice(self.letter_array)
-                    self.used_random_values_array.append(rand_letter)
-                    if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand letter
-                        qr_code_text = qr_code_text.replace("#id", f"{rand_letter}")
-                    else:
-                        qr_code_text = f"{qr_code_text}-{rand_letter}"
+                        while rand_letter in self.used_random_values_array:
+                            rand_letter = random.choice(self.letter_array)
+                        self.used_random_values_array.append(rand_letter)
+                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand letter
+                            qr_code_text = qr_code_text.replace("#id", f"{rand_letter}")
+                        else:
+                            qr_code_text = f"{qr_code_text}-{rand_letter}"
 
-                qr = qrcode.QRCode(
-                    version=1,
-                    error_correction=qrcode.constants.ERROR_CORRECT_L,
-                    box_size=10,
-                    border=4
-                )
+                    if self.ids.gencsv.active:
+                        self.generate_csv(csv_file_name, qr_code_text)
 
-                qr.add_data(qr_code_text)
-                qr.make(fit=True)
+                    qr = qrcode.QRCode(
+                        version=1,
+                        error_correction=qrcode.constants.ERROR_CORRECT_L,
+                        box_size=10,
+                        border=4
+                    )
 
-                img = qr.make_image()
-                file_name = f"{qr_code_text}.jpg"
-                img.save(file_name)
+                    qr.add_data(qr_code_text)
+                    qr.make(fit=True)
 
-            # reset the used random element array if used
-            self.used_random_values_array = []
+                    img = qr.make_image()
+                    file_name = f"{qr_code_text}.jpg"
+                    img.save(file_name)
 
-            # reset the counts
-            self.number_count = 1
-            self.letter_count = 0
+                # reset the used random element array if used
+                self.used_random_values_array = []
+
+                # reset the counts
+                self.number_count = 1
+                self.letter_count = 0
+        else:  # if there is an uploaded file, use that to gen qrcodes instead
+            with open(self.uploaded_file_path, "r") as input_csv:
+                for line in input_csv:
+                    qr_code_text = line.replace(",", "-")[:len(line) - 1]
+
+                    qr = qrcode.QRCode(
+                        version=1,
+                        error_correction=qrcode.constants.ERROR_CORRECT_L,
+                        box_size=10,
+                        border=4
+                    )
+
+                    qr.add_data(qr_code_text)
+                    qr.make(fit=True)
+
+                    img = qr.make_image()
+                    file_name = f"{qr_code_text}.jpg"
+                    img.save(file_name)
+
+    def generate_csv(self, csv_file_name, qr_code_text):
+        with open(csv_file_name, "a") as csv:
+            qr_code_text = qr_code_text.replace("-", ",")
+            csv.write(qr_code_text + "\n")
+
+    def upload(self):
+        Tk().withdraw()  # keep root window form appearing as we don't want full GUI
+        self.uploaded_file_path = askopenfilename()
+        if self.uploaded_file_path == "":  # if canceled change back to default
+            self.ids.uploadedfilename.text = "No file uploaded."
+            self.ids.uploadedfilename.pos = (155, 5)
+        elif ".csv" not in self.uploaded_file_path:
+            self.ids.uploadedfilename.text = "Must be a CSV file."
+            self.ids.uploadedfilename.pos = (155, 5)
+            self.uploaded_file_path = None
+        else:  # else if a file was chosen, put the file name on the screen
+            string_arr = self.uploaded_file_path.split("/")
+            self.ids.uploadedfilename.text = string_arr[len(string_arr) - 1]
+            self.ids.uploadedfilename.pos = (270, 5)
 
     def add_row(self):
         if self.row_count + 1 <= 20:
