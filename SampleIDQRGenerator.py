@@ -30,6 +30,9 @@ from kivy.uix.textinput import TextInput
 from tkinter import Tk
 import tkinter.filedialog as filedialog
 
+# Import fpdf for PDF creation
+from fpdf import FPDF
+
 # Set setup variables
 os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 
@@ -47,6 +50,7 @@ class MainScreenWidget(BoxLayout):
     preview_images_array = [''] * 100
     uploaded_file_path = None
     save_folder_path = None
+    array_of_codes = []
     letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
                     "U", "V", "W", "X", "Y", "Z", 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK',
                     'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA',
@@ -256,7 +260,17 @@ class MainScreenWidget(BoxLayout):
                     file_name = f"{qr_code_text}.jpg"
                     if self.save_folder_path is not None and self.save_folder_path is not "":
                         file_name = f"{self.save_folder_path}/{file_name}"
+                    img.save(file_name)  # save qr code as a jpg file
+
+                    # Draw label on image
+                    img = Image.open(file_name)
+                    draw = ImageDraw.Draw(img)
+                    font = ImageFont.truetype("arial", 18)
+                    color = 0
+                    draw.text((37, 10), qr_code_text, font=font, fill=color)
                     img.save(file_name)
+
+                    self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
 
                 # reset the used random element array if used
                 self.used_random_values_array = []
@@ -283,7 +297,36 @@ class MainScreenWidget(BoxLayout):
                     file_name = f"{qr_code_text}.jpg"
                     if self.save_folder_path is not None and self.save_folder_path is not "":
                         file_name = f"{self.save_folder_path}/{file_name}"
+                    img.save(file_name)  # save qr code as a jpg file
+
+                    # Draw label on image
+                    img = Image.open(file_name)
+                    draw = ImageDraw.Draw(img)
+                    font = ImageFont.truetype("arial", 12)
+                    color = 0
+                    draw.text((37, 10), qr_code_text, font=font, fill=color)
                     img.save(file_name)
+
+                    self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
+
+        # Create PDF file with QR Codes in it
+        pdf = FPDF(orientation='P')
+        pdf.add_page()
+        x, y = (5.0, 5.0)
+        pdf.set_xy(x, y)
+
+        num_in_row = 0  # used to measure how many will fit in a row
+        num_in_page = 0  # used to measure how many will fit in a pg
+        for code in self.array_of_codes:  # print qr codes to pdf file
+            pdf.image(code, w=50, h=50)
+            num_in_page += 1
+            x += 50
+            if num_in_row == 3: x = 5.0; y += 50; num_in_row = -1  # when 4 codes are printed in a row, move to next row
+            if num_in_page == 20: y = 5.0; pdf.add_page(); num_in_page = 0  # when 5 rows printed in pg, move to nxt pg
+            pdf.set_xy(x, y)
+            num_in_row += 1
+        self.array_of_codes = []
+        pdf.output('test3.pdf', 'F')  # output final PDF file
 
     def generate_csv(self, csv_file_path, qr_code_text):
         if self.save_folder_path is not None and self.save_folder_path is not "":
