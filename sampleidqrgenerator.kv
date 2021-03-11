@@ -233,7 +233,7 @@
                     size_hint: None, None
                     size: 150, 50
                     pos: 800, 5
-                    on_release: root.create();
+                    on_release: root.create_popup();
 
 <RowWidget>:
     orientation: 'lr-tb'
@@ -283,6 +283,43 @@
     text: ""
     size_hint: None, None
     size: 200, 50
+
+<FileSettingsWidget>:
+    orientation: 'vertical'
+    BoxLayout:
+        id: firsthorizontalbox
+        orientation: 'horizontal'
+        padding: 0, 5
+        Button:
+            id: folderchooser
+            text: "Choose Folder"
+            size_hint: None, None
+            size: 195, 50
+            on_release: root.choose_save_folder();
+        Label:
+            id: folderpath
+            text: "No folder selected, default is root folder."
+            size_hint: None, None
+            size: 430, 50
+            halign: 'center'
+            valign: 'center'
+            text_size: self.size
+    BoxLayout:
+        id: secondhorizontalbox
+        orientation: 'horizontal'
+        Button:
+            id: file_settings_widget
+            text: "Create"
+            size_hint: None, None
+            size: 312, 50
+            on_release: root.call_create()
+            on_release: root.file_settings_popup.dismiss()
+        Button:
+            text: "No"
+            size_hint: None, None
+            size: 312, 50
+            on_release: root.file_settings_popup.dismiss()
+            halign: 'right'
 
 <ExitWidget>:
     orientation: 'vertical'

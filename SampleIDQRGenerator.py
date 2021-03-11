@@ -28,7 +28,7 @@ from kivy.uix.textinput import TextInput
 
 # Import Tkinter packages for file chooser
 from tkinter import Tk
-from tkinter.filedialog import askopenfilename
+import tkinter.filedialog as filedialog
 
 # Set setup variables
 os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
@@ -46,6 +46,7 @@ class MainScreenWidget(BoxLayout):
     used_random_values_array = []
     preview_images_array = [''] * 100
     uploaded_file_path = None
+    save_folder_path = None
     letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
                     "U", "V", "W", "X", "Y", "Z", 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK',
                     'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA',
@@ -177,6 +178,15 @@ class MainScreenWidget(BoxLayout):
 
         self.curr_preview_img_index = i  # the current preview image displayed is the last one that was created
 
+    def create_popup(self):
+        file_settings_widget = FileSettingsWidget()
+        file_settings_widget.main_screen = self
+        file_settings_widget.file_settings_popup = Popup(title="                             Are you sure you want to create?",
+                                              content=file_settings_widget, size_hint=(None, None), size=(650, 200),
+                                              auto_dismiss=True)
+        file_settings_widget.file_settings_popup.open()
+        return True
+
     def create(self):
         if self.uploaded_file_path is None or self.uploaded_file_path == "":
             t = datetime.now()
@@ -244,6 +254,8 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
+                    if self.save_folder_path is not None and self.save_folder_path is not "":
+                        file_name = f"{self.save_folder_path}/{file_name}"
                     img.save(file_name)
 
                 # reset the used random element array if used
@@ -269,16 +281,20 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
+                    if self.save_folder_path is not None and self.save_folder_path is not "":
+                        file_name = f"{self.save_folder_path}/{file_name}"
                     img.save(file_name)
 
-    def generate_csv(self, csv_file_name, qr_code_text):
-        with open(csv_file_name, "a") as csv:
+    def generate_csv(self, csv_file_path, qr_code_text):
+        if self.save_folder_path is not None and self.save_folder_path is not "":
+            csv_file_path = f"{self.save_folder_path}/{csv_file_path}"
+        with open(csv_file_path, "a") as csv:
             qr_code_text = qr_code_text.replace("-", ",")
             csv.write(qr_code_text + "\n")
 
     def upload(self):
         Tk().withdraw()  # keep root window form appearing as we don't want full GUI
-        self.uploaded_file_path = askopenfilename()
+        self.uploaded_file_path = filedialog.askopenfilename()
         if self.uploaded_file_path == "":  # if canceled change back to default
             self.ids.uploadedfilename.text = "No file uploaded."
             self.ids.uploadedfilename.pos = (155, 5)
@@ -361,6 +377,22 @@ class RowWidget(StackLayout):
 
 class ColWidget(TextInput):
     pass
+
+
+class FileSettingsWidget(BoxLayout):
+    main_screen = None
+    file_settings_popup = None
+
+    def call_create(self):
+        self.main_screen.create()
+
+    def choose_save_folder(self):
+        Tk().withdraw()
+        self.main_screen.save_folder_path = filedialog.askdirectory()
+        if self.main_screen.save_folder_path is None and self.main_screen.save_folder_path is "":
+            self.ids.folderpath.text = "No folder selected, default is root folder."
+        else:
+            self.ids.folderpath.text = self.main_screen.save_folder_path
 
 
 class ExitWidget(BoxLayout):
