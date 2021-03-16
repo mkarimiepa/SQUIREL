@@ -265,9 +265,9 @@ class MainScreenWidget(BoxLayout):
                     # Draw label on image
                     img = Image.open(file_name)
                     draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("arial", 18)
+                    font = ImageFont.truetype("arial", 21)
                     color = 0
-                    draw.text((37, 10), qr_code_text, font=font, fill=color)
+                    draw.text((37, -6), f"{qr_code_text[:32]}\n{qr_code_text[32:64]}\n{qr_code_text[64:]}", font=font, fill=color)
                     img.save(file_name)
 
                     self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
@@ -302,9 +302,9 @@ class MainScreenWidget(BoxLayout):
                     # Draw label on image
                     img = Image.open(file_name)
                     draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("arial", 12)
+                    font = ImageFont.truetype("arial", 21)
                     color = 0
-                    draw.text((37, 10), qr_code_text, font=font, fill=color)
+                    draw.text((37, -6), f"{qr_code_text[:32]}\n{qr_code_text[32:64]}\n{qr_code_text[64:]}", font=font, fill=color)
                     img.save(file_name)
 
                     self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
