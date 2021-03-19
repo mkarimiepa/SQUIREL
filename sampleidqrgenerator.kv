@@ -307,6 +307,25 @@
     BoxLayout:
         id: secondhorizontalbox
         orientation: 'horizontal'
+        padding: 0, 5
+        Spinner:
+            id: pdflayout
+            size_hint: None, None
+            size: 300, 50
+            text: 'Default (5x4)'
+            values: 'Default (5x4)', '4x1', '4x2', '4x3', '4x4', '3x2', '3x3', '2x2'
+        Label:
+            id: pdflayoutlabel
+            text: "Page Layout (Rows x Columns)"
+            size_hint: None, None
+            size: 315, 50
+            padding: 20, 0
+            halign: 'left'
+            valign: 'center'
+            text_size: self.size
+    BoxLayout:
+        id: thirdhorizontalbox
+        orientation: 'horizontal'
         Button:
             id: file_settings_widget
             text: "Create"

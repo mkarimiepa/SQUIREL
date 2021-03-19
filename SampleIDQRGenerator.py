@@ -40,6 +40,8 @@ os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 
 
 class MainScreenWidget(BoxLayout):
+    file_settings_widget = None
+
     row_count = 0
     col_count = 4
     number_count = 1
@@ -183,12 +185,12 @@ class MainScreenWidget(BoxLayout):
         self.curr_preview_img_index = i  # the current preview image displayed is the last one that was created
 
     def create_popup(self):
-        file_settings_widget = FileSettingsWidget()
-        file_settings_widget.main_screen = self
-        file_settings_widget.file_settings_popup = Popup(title="                             Are you sure you want to create?",
-                                              content=file_settings_widget, size_hint=(None, None), size=(650, 200),
-                                              auto_dismiss=True)
-        file_settings_widget.file_settings_popup.open()
+        self.file_settings_widget = FileSettingsWidget()
+        self.file_settings_widget.main_screen = self
+        self.file_settings_widget.file_settings_popup = Popup(title="                             Are you sure you want to create?",
+                                          content=self.file_settings_widget, size_hint=(None, None), size=(650, 240),
+                                          auto_dismiss=True)
+        self.file_settings_widget.file_settings_popup.open()
         return True
 
     def create(self):
@@ -310,19 +312,61 @@ class MainScreenWidget(BoxLayout):
                     self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
 
         # Create PDF file with QR Codes in it
+        self.create_pdf()
+
+    def create_pdf(self):
         pdf = FPDF(orientation='P')
         pdf.add_page()
         x, y = (5.0, 5.0)
         pdf.set_xy(x, y)
 
+        # Set up variables based on layout chosen by user
+        layout = self.file_settings_widget.ids.pdflayout.text
+
+        # Default values for option: "Default (5x4)"
+        w = 50; h = 50  # set width and height
+        x_change = 50  # set x distance between this code and next
+        y_change = 50  # set y distance between this code and next
+        max_in_row = 3  # set the max # codes in row - 1
+        max_in_pg = 20  # set the max # codes in pg
+
+        if layout is "4x1":
+            w = 60; h = 60  # set same vars as above but for diff layout
+            x_change = 60; y_change = 60
+            max_in_row = 0; max_in_pg = 4
+        elif layout is "4x2":
+            w = 70; h = 70
+            x_change = 65; y_change = 65
+            max_in_row = 1; max_in_pg = 8
+        elif layout is "4x3":
+            w = 70; h = 70
+            x_change = 65; y_change = 65
+            max_in_row = 2; max_in_pg = 12
+        elif layout is "4x4":
+            w = 50; h = 55
+            x_change = 50; y_change = 55
+            max_in_row = 3; max_in_pg = 16
+        elif layout is "3x2":
+            w = 90; h = 90
+            x_change = 90; y_change = 90
+            max_in_row = 1; max_in_pg = 6
+        elif layout is "3x3":
+            w = 70; h = 70
+            x_change = 70; y_change = 70
+            max_in_row = 2; max_in_pg = 9
+        elif layout is "2x2":
+            w = 100; h = 100
+            x_change = 100; y_change = 100
+            max_in_row = 1; max_in_pg = 4
+
         num_in_row = 0  # used to measure how many will fit in a row
         num_in_page = 0  # used to measure how many will fit in a pg
         for code in self.array_of_codes:  # print qr codes to pdf file
-            pdf.image(code, w=50, h=50)
+            pdf.image(code, w=w, h=h)
             num_in_page += 1
-            x += 50
-            if num_in_row == 3: x = 5.0; y += 50; num_in_row = -1  # when 4 codes are printed in a row, move to next row
-            if num_in_page == 20: y = 5.0; pdf.add_page(); num_in_page = 0  # when 5 rows printed in pg, move to nxt pg
+            x += x_change
+            if num_in_row == max_in_row: x = 5.0; y += y_change; num_in_row = -1  # when 4 codes are printed in a row, move to next row
+            if num_in_page == max_in_pg: y = 5.0; pdf.add_page(); num_in_page = 0  # when 5 rows printed in pg, move to nxt pg
             pdf.set_xy(x, y)
             num_in_row += 1
         self.array_of_codes = []
