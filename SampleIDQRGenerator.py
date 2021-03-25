@@ -6,7 +6,7 @@ Contact: Timothy Boe boe.timothy@epa.gov and Worth also right?
 Requirements:
 """
 
-# import Necessary packages
+# Import necessary packages
 import os
 import qrcode
 import random
@@ -43,7 +43,7 @@ class MainScreenWidget(BoxLayout):
     file_settings_widget = None
 
     row_count = 0
-    col_count = 4
+    col_count = 2
     number_count = 1
     letter_count = 0
     curr_preview_img_index = 0
@@ -260,8 +260,11 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
-                    if self.save_folder_path is not None and self.save_folder_path is not "":
-                        file_name = f"{self.save_folder_path}/{file_name}"
+                    if self.ids.individualcodes.active:
+                        if self.save_folder_path is not None and self.save_folder_path is not "":
+                            file_name = f"{self.save_folder_path}/{file_name}"
+                    else:
+                        file_name = f"Temp/{file_name}"
                     img.save(file_name)  # save qr code as a jpg file
 
                     # Draw label on image
@@ -297,8 +300,11 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
-                    if self.save_folder_path is not None and self.save_folder_path is not "":
-                        file_name = f"{self.save_folder_path}/{file_name}"
+                    if self.ids.individualcodes.active:
+                        if self.save_folder_path is not None and self.save_folder_path is not "":
+                            file_name = f"{self.save_folder_path}/{file_name}"
+                    else:
+                        file_name = f"Temp/{file_name}"
                     img.save(file_name)  # save qr code as a jpg file
 
                     # Draw label on image
@@ -369,8 +375,16 @@ class MainScreenWidget(BoxLayout):
             if num_in_page == max_in_pg: y = 5.0; pdf.add_page(); num_in_page = 0  # when 5 rows printed in pg, move to nxt pg
             pdf.set_xy(x, y)
             num_in_row += 1
-        self.array_of_codes = []
-        pdf.output('test3.pdf', 'F')  # output final PDF file
+
+        if not self.ids.individualcodes.active:  # if Individual QR Codes checkbox not checked
+            for code in self.array_of_codes:  # Then delete qrcodes
+                os.remove(code)
+        self.array_of_codes = []  # empty the array_of_codes array for the next create
+
+        file_name = "test3.pdf"
+        if self.save_folder_path is not None and self.save_folder_path is not "":
+            file_name = f"{self.save_folder_path}/{file_name}"
+        pdf.output(file_name, 'F')  # output final PDF file
 
     def generate_csv(self, csv_file_path, qr_code_text):
         if self.save_folder_path is not None and self.save_folder_path is not "":
@@ -401,13 +415,13 @@ class MainScreenWidget(BoxLayout):
             new_row.main_screen = self
 
             # set row number
-            new_row.children[4].text = f"{self.row_count}"
+            new_row.children[2].text = f"{self.row_count}"
 
             # add fields to array of text_inputs, so I can access them later
-            new_row_array = [new_row.children[3], new_row.children[2], new_row.children[1], new_row.children[0]]
+            new_row_array = [new_row.children[1], new_row.children[0]]
 
             # add the correct number of cols to the new row
-            for _ in range(self.col_count - 4):
+            for _ in range(self.col_count - 2):
                 new_col = ColWidget()
                 new_row.add_widget(new_col)  # add a col to new row
                 new_row_array.append(new_col)  # add a col to new row for internal arr
@@ -439,7 +453,7 @@ class MainScreenWidget(BoxLayout):
                 i -= 1
 
     def remove_col(self):
-        if self.col_count - 1 != 3:  # doesn't remove anything if only 4 col are left
+        if self.col_count - 1 != 1:  # doesn't remove anything if only 2 col are left
             rows_section = self.ids.middlesection
             i = 0
             self.col_count -= 1  # decrement count of cols

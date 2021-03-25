@@ -144,6 +144,16 @@
                         text: "Generate CSV"
                         size_hint: None, None
                         size: 80, 50
+                    CheckBox:
+                        id: individualcodes
+                        active: False
+                        size_hint: None, None
+                        size: 50, 50
+                    Label:
+                        id: codescheckbox
+                        text: "Individual QR Codes"
+                        size_hint: None, None
+                        size: 80, 50
                     FloatLayout:
                         id: addremovesection
                         #orientation: 'horizontal'
@@ -265,16 +275,6 @@
     TextInput:
         id: field1
         text: "Sponge"
-        size_hint: None, None
-        size: 200, 50
-    TextInput:
-        id: field2
-        text: "2.2.21"
-        size_hint: None, None
-        size: 200, 50
-    TextInput:
-        id: field3
-        text: "AnCOR"
         size_hint: None, None
         size: 200, 50
 
