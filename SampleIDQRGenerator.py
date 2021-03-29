@@ -42,17 +42,16 @@ os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 class MainScreenWidget(BoxLayout):
     file_settings_widget = None
 
-    row_count = 0
-    col_count = 2
-    number_count = 1
-    letter_count = 0
-    curr_preview_img_index = 0
-    text_input_array = []
-    used_random_values_array = []
-    preview_images_array = [''] * 100
-    uploaded_file_path = None
-    save_folder_path = None
-    array_of_codes = []
+    row_count = 0  # num of rows
+    number_count = 1  # where the current number id is
+    letter_count = 0  # where the current letter id is
+    curr_preview_img_index = 0  # which image is being displayed in preview
+    text_input_array = []  # 2d array of textinput fields to read from when creating/previewing
+    used_random_values_array = []  # used to prevent random values from being repeated
+    preview_images_array = [''] * 100  # array of images that are previewable
+    uploaded_file_path = None  # file path for the uploaded file
+    save_folder_path = None  # path to folder where files should be saved
+    array_of_codes = []  # array of qr codes to be printed to PDF
     letter_array = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
                     "U", "V", "W", "X", "Y", "Z", 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK',
                     'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA',
@@ -125,32 +124,20 @@ class MainScreenWidget(BoxLayout):
                 else:
                     qr_code_text = f"{qr_code_text}-{col.text}"
 
-            # checkboxes
-            id_format_spinner = self.ids.idformat
-            id_sequential_spinner = self.ids.idsequence
+                    # Replace any ids in the text with the appropriate sequential or random number/alphabet letter
+                    if "#num_seq" in qr_code_text:  # replace user placeholder '#num_seq' w/number
+                        qr_code_text = qr_code_text.replace("#num_seq", f"{self.number_count}")
 
-            if id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Sequential":
-                if "#id" in qr_code_text:  # replace user placeholder '#id' w/number
-                    qr_code_text = qr_code_text.replace("#id", f"{self.number_count}")
-                else:
-                    qr_code_text = f"{qr_code_text}-{self.number_count}"
-            elif id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Random":
-                rand_num = int(random.uniform(1, 1000))
-                if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand num
-                    qr_code_text = qr_code_text.replace("#id", f"{rand_num}")
-                else:
-                    qr_code_text = f"{qr_code_text}-{rand_num}"
-            if id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Sequential":
-                if "#id" in qr_code_text:  # replace user placeholder '#id' w/letter
-                    qr_code_text = qr_code_text.replace("#id", f"{self.letter_array[self.letter_count]}")
-                else:
-                    qr_code_text = f"{qr_code_text}-{self.letter_array[self.letter_count]}"
-            elif id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Random":
-                rand_letter = random.choice(self.letter_array)
-                if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand letter
-                    qr_code_text = qr_code_text.replace("#id", f"{rand_letter}")
-                else:
-                    qr_code_text = f"{qr_code_text}-{rand_letter}"
+                    if "#num_rand" in qr_code_text:  # replace user placeholder 'num_rand' w/rand num
+                        rand_num = int(random.uniform(1, 1000))
+                        qr_code_text = qr_code_text.replace("#num_rand", f"{rand_num}")
+
+                    if "#alpha_seq" in qr_code_text:  # replace user placeholder '#alpha_seq' w/letter
+                        qr_code_text = qr_code_text.replace("#alpha_seq", f"{self.letter_array[self.letter_count]}")
+
+                    if "#alpha_rand" in qr_code_text:  # replace user placeholder '#alpha_rand' w/rand letter
+                        rand_letter = random.choice(self.letter_array)
+                        qr_code_text = qr_code_text.replace("#alpha_rand", f"{rand_letter}")
 
             # make QR code
             qr = qrcode.QRCode(
@@ -210,40 +197,28 @@ class MainScreenWidget(BoxLayout):
                         else:
                             qr_code_text = f"{qr_code_text}-{col.text}"
 
-                    # handle checkboxes
-                    id_format_spinner = self.ids.idformat
-                    id_sequential_spinner = self.ids.idsequence
-
-                    if id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Sequential":
-                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/number
-                            qr_code_text = qr_code_text.replace("#id", f"{self.number_count}")
-                        else:
-                            qr_code_text = f"{qr_code_text}-{self.number_count}"
+                    # Replace any ids in the text with the appropriate sequential or random number/alphabet letter
+                    if "#num_seq" in qr_code_text:  # replace user placeholder '#num_seq' w/number
+                        qr_code_text = qr_code_text.replace("#num_seq", f"{self.number_count}")
                         self.number_count += 1
-                    elif id_format_spinner.text == "Insert Number" and id_sequential_spinner.text == "Random":
+
+                    if "#num_rand" in qr_code_text:  # replace user placeholder 'num_rand' w/rand num
                         rand_num = int(random.uniform(1, 1000))
                         while rand_num in self.used_random_values_array:
                             rand_num = int(random.uniform(1, 1000))
                         self.used_random_values_array.append(rand_num)
-                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand num
-                            qr_code_text = qr_code_text.replace("#id", f"{rand_num}")
-                        else:
-                            qr_code_text = f"{qr_code_text}-{rand_num}"
-                    if id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Sequential":
-                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/letter
-                            qr_code_text = qr_code_text.replace("#id", f"{self.letter_array[self.letter_count]}")
-                        else:
-                            qr_code_text = f"{qr_code_text}-{self.letter_array[self.letter_count]}"
+                        qr_code_text = qr_code_text.replace("#num_rand", f"{rand_num}")
+
+                    if "#alpha_seq" in qr_code_text:  # replace user placeholder '#alpha_seq' w/letter
+                        qr_code_text = qr_code_text.replace("#alpha_seq", f"{self.letter_array[self.letter_count]}")
                         self.letter_count += 1
-                    elif id_format_spinner.text == "Insert Letter" and id_sequential_spinner.text == "Random":
+
+                    if "#alpha_rand" in qr_code_text:  # replace user placeholder '#alpha_rand' w/rand letter
                         rand_letter = random.choice(self.letter_array)
                         while rand_letter in self.used_random_values_array:
                             rand_letter = random.choice(self.letter_array)
                         self.used_random_values_array.append(rand_letter)
-                        if "#id" in qr_code_text:  # replace user placeholder '#id' w/rand letter
-                            qr_code_text = qr_code_text.replace("#id", f"{rand_letter}")
-                        else:
-                            qr_code_text = f"{qr_code_text}-{rand_letter}"
+                        qr_code_text = qr_code_text.replace("#alpha_rand", f"{rand_letter}")
 
                     if self.ids.gencsv.active:
                         self.generate_csv(csv_file_name, qr_code_text)
@@ -421,10 +396,15 @@ class MainScreenWidget(BoxLayout):
             new_row_array = [new_row.children[1], new_row.children[0]]
 
             # add the correct number of cols to the new row
-            for _ in range(self.col_count - 2):
+            for _ in range(new_row.col_count - 2):
                 new_col = ColWidget()
                 new_row.add_widget(new_col)  # add a col to new row
                 new_row_array.append(new_col)  # add a col to new row for internal arr
+
+            # Add the add/remove column btns
+            new_buttons = AddRemoveColWidget()
+            new_buttons.main_screen = self  # set main_screen
+            new_row.add_widget(new_buttons)
 
             rows_section = self.ids.middlesection
             rows_section.add_widget(new_row)  # add new row to UI
@@ -439,28 +419,34 @@ class MainScreenWidget(BoxLayout):
             self.preview_images_array.remove(self.preview_images_array[self.row_count])  # remove file from preview arr
             self.curr_preview_img_index = 0  # set this to 0 so it doesn't get stuck on an img that no longer exists
 
-    def add_col(self):
-        if self.col_count + 1 <= 20:
-            self.col_count += 1
+    def add_col(self, col):
+        if col.parent.col_count + 1 <= 20:
+            col.parent.col_count += 1
 
-            # add a col to each row widget and to each row in text_input_array
-            array_of_curr_rows = self.ids.middlesection.children
-            i = len(self.text_input_array) - 1
-            for row in array_of_curr_rows:
-                new_col = ColWidget()
-                row.add_widget(new_col)  # add to ui
-                self.text_input_array[i].append(new_col)  # add to internal array
-                i -= 1
+            # add a col to this row widget and to this row in text_input_array
+            row = col.parent
+            row_index_to_edit = int(row.ids.rownumber.text) - 1
 
-    def remove_col(self):
-        if self.col_count - 1 != 1:  # doesn't remove anything if only 2 col are left
-            rows_section = self.ids.middlesection
-            i = 0
-            self.col_count -= 1  # decrement count of cols
-            for row in rows_section.children:
-                row.remove_widget(row.children[0])  # remove the end col of each row
-                self.text_input_array[i].remove(self.text_input_array[i][self.col_count])  # remove last col from array
-                i += 1
+            new_col = ColWidget()
+            row.remove_widget(row.children[0])  # remove the add/remove cols
+            row.add_widget(new_col)  # add to ui
+
+            # Add the add/remove col btns back
+            new_buttons = AddRemoveColWidget()
+            new_buttons.main_screen = self  # set main_screen
+            row.add_widget(new_buttons)
+
+            self.text_input_array[row_index_to_edit].append(new_col)  # add newcol to its row in the array
+
+    def remove_col(self, col):
+        if col.parent.col_count - 1 != 1:  # doesn't remove anything if only 2 col are left
+            col.parent.col_count -= 1  # decrement count of cols
+
+            row = col.parent  # getting the row widget this col is in
+            row.remove_widget(row.children[1])  # remove the end col of each row (before the add/rem btns)
+
+            row_index_to_edit = int(row.ids.rownumber.text) - 1  # get the index to edit in the array
+            self.text_input_array[row_index_to_edit].remove(self.text_input_array[row_index_to_edit][col.parent.col_count])  # remove last col from array
 
     def exit(self, *args):
         exit_widget = ExitWidget()
@@ -473,11 +459,21 @@ class MainScreenWidget(BoxLayout):
 
 
 class RowWidget(StackLayout):
-    pass
+    col_count = 2
 
 
 class ColWidget(TextInput):
     pass
+
+
+class AddRemoveColWidget(BoxLayout):
+    main_screen = None
+
+    def call_add_col(self):
+        self.main_screen.add_col(self)
+
+    def call_remove_col(self):
+        self.main_screen.remove_col(self)
 
 
 class FileSettingsWidget(BoxLayout):
@@ -530,7 +526,7 @@ class SampleIDQRGeneratorApp(App):
     def on_start(self):
         if not os.path.isdir("Temp"):
             os.mkdir("Temp")
-        self.main_screen.add_row()
+        self.main_screen.add_row()  # add a row to the layout, and add/remove col btns
 
     def on_maximize(self, *args):
         Window.size = (1000, 500)  # when user tries to maximize, snap back to original size

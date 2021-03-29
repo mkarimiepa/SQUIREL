@@ -114,26 +114,6 @@
                     orientation: 'horizontal'
                     size_hint: None, None
                     size: 1000, 50
-                    Label:
-                        text: "ID Format:"
-                        size_hint: None, None
-                        size: 100, 50
-                    Spinner:
-                        id: idformat
-                        size_hint: None, None
-                        size: 200, 50
-                        text: 'No ID'
-                        values: 'No ID', 'Insert Letter', 'Insert Number'
-                    Label:
-                        text: "ID Sequence:"
-                        size_hint: None, None
-                        size: 100, 50
-                    Spinner:
-                        id: idsequence
-                        size_hint: None, None
-                        size: 200, 50
-                        text: 'Sequential'
-                        values: 'Sequential', 'Random'
                     CheckBox:
                         id: gencsv
                         active: False
@@ -153,7 +133,7 @@
                         id: codescheckbox
                         text: "Individual QR Codes"
                         size_hint: None, None
-                        size: 80, 50
+                        size: 120, 50
                     FloatLayout:
                         id: addremovesection
                         #orientation: 'horizontal'
@@ -163,26 +143,14 @@
                             text: "Add Row"
                             size_hint: None, None
                             size: 70, 30
-                            pos: 920, 270
+                            pos: 820, 270
                             on_release: root.add_row();
                         Button:
                             text: "Remove Row"
                             size_hint: None, None
                             size: 100, 30
-                            pos: 890, 240
+                            pos: 890, 270
                             on_release: root.remove_row();
-                        Button:
-                            text: "Add Column"
-                            size_hint: None, None
-                            size: 100, 30
-                            pos: 10, 210
-                            on_release: root.add_col();
-                        Button:
-                            text: "Remove Column"
-                            size_hint: None, None
-                            size: 120, 30
-                            pos: 10, 180
-                            on_release: root.remove_col();
             BoxLayout:
                 id: boxlayoutformiddlesection
                 orientation: 'horizontal'
@@ -191,18 +159,18 @@
                 Label:
                     id: justplaceholder
                     size_hint: None, None
-                    size: 135, 200
+                    size: 5, 200
                 ScreenWidget:
                     do_scroll_x: True
                     do_scroll_y: True
                     bar_width: 5
                     size_hint: None, None
-                    size: 865, 190
+                    size: 995, 190
                     StackLayout:
                         id: middlesection
                         orientation: 'tb-lr'
                         size_hint: None, None
-                        size: 4175, 1050
+                        size: 4295, 1050
             FloatLayout:
                 id: bottomsection
                 #orientation: 'horizontal'
@@ -283,6 +251,22 @@
     text: ""
     size_hint: None, None
     size: 200, 50
+
+<AddRemoveColWidget>:
+    id: addremovecols
+    orientation: 'vertical'
+    size_hint: None, None
+    size: 45, 50
+    Button:
+        text: "Add Column"
+        size_hint: None, None
+        size: 100, 25
+        on_release: root.call_add_col();
+    Button:
+        text: "Remove Column"
+        size_hint: None, None
+        size: 120, 25
+        on_release: root.call_remove_col();
 
 <FileSettingsWidget>:
     orientation: 'vertical'
