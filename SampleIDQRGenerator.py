@@ -311,34 +311,38 @@ class MainScreenWidget(BoxLayout):
         max_in_row = 3  # set the max # codes in row - 1
         max_in_pg = 20  # set the max # codes in pg
 
-        if layout is "4x1":
+        if layout == "4x1":
             w = 60; h = 60  # set same vars as above but for diff layout
             x_change = 60; y_change = 60
             max_in_row = 0; max_in_pg = 4
-        elif layout is "4x2":
+        elif layout == "4x2":
             w = 70; h = 70
             x_change = 65; y_change = 65
             max_in_row = 1; max_in_pg = 8
-        elif layout is "4x3":
+        elif layout == "4x3":
             w = 70; h = 70
             x_change = 65; y_change = 65
             max_in_row = 2; max_in_pg = 12
-        elif layout is "4x4":
+        elif layout == "4x4":
             w = 50; h = 55
             x_change = 50; y_change = 55
             max_in_row = 3; max_in_pg = 16
-        elif layout is "3x2":
+        elif layout == "3x2":
             w = 90; h = 90
             x_change = 90; y_change = 90
             max_in_row = 1; max_in_pg = 6
-        elif layout is "3x3":
+        elif layout == "3x3":
             w = 70; h = 70
             x_change = 70; y_change = 70
             max_in_row = 2; max_in_pg = 9
-        elif layout is "2x2":
+        elif layout == "2x2":
             w = 100; h = 100
             x_change = 100; y_change = 100
             max_in_row = 1; max_in_pg = 4
+        elif layout == "1x2 and 5/8":
+            w = 35; h = 92.20
+            x_change = 33; y_change = 88
+            max_in_row = 5; max_in_pg = 18
 
         num_in_row = 0  # used to measure how many will fit in a row
         num_in_page = 0  # used to measure how many will fit in a pg
