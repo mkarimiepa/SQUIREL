@@ -120,8 +120,18 @@ class MainScreenWidget(BoxLayout):
             for col in row:
                 if col == row[0]: continue
                 if col == row[1]:
+                    if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
+                        self.error(
+                            "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
+                            153)
+                        return
                     qr_code_text = f"{col.text}"
                 else:
+                    if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
+                        self.error(
+                            "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
+                            153)
+                        return
                     qr_code_text = f"{qr_code_text}-{col.text}"
 
                     # Replace any ids in the text with the appropriate sequential or random number/alphabet letter
@@ -139,6 +149,14 @@ class MainScreenWidget(BoxLayout):
                         rand_letter = random.choice(self.letter_array)
                         qr_code_text = qr_code_text.replace("#alpha_rand", f"{rand_letter}")
 
+            if len(qr_code_text) > 300:  # if longer than 300, won't work
+                self.error("ERROR: One (or more) of your IDs is longer than 300 characters. The QR Code(s) won't work, please shorten your ID(s).", 168)
+                return
+            shorten_file_name = False
+            if len(qr_code_text) > 161:  # if qr code text is longer than 161chars warn user
+                self.error("WARNING: One (or more) of your IDs is longer than 161 characters. The QR Code(s) will function correctly, but the filename(s) will be shortened.", 168)
+                shorten_file_name = True
+
             # make QR code
             qr = qrcode.QRCode(
                 version=1,
@@ -152,6 +170,8 @@ class MainScreenWidget(BoxLayout):
 
             img = qr.make_image()
             file_name = f"{qr_code_text}.jpg"
+            if shorten_file_name:  # if code longer than 161 chars, save filename as max of 161 chars
+                file_name = f"{qr_code_text[0:161]}.jpg"
             file_path = f"Temp/{file_name}"
             img.save(file_path)
 
@@ -193,8 +213,20 @@ class MainScreenWidget(BoxLayout):
                     for col in row:
                         if col == row[0]: continue
                         if col == row[1]:
+                            if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
+                                self.error(
+                                    "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
+                                    153)
+                                self.array_of_codes = []
+                                return
                             qr_code_text = f"{col.text}"
                         else:
+                            if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
+                                self.error(
+                                    "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
+                                    153)
+                                self.array_of_codes = []
+                                return
                             qr_code_text = f"{qr_code_text}-{col.text}"
 
                     # Replace any ids in the text with the appropriate sequential or random number/alphabet letter
@@ -220,9 +252,23 @@ class MainScreenWidget(BoxLayout):
                         self.used_random_values_array.append(rand_letter)
                         qr_code_text = qr_code_text.replace("#alpha_rand", f"{rand_letter}")
 
-                    if self.ids.gencsv.active:
+                    if len(qr_code_text) > 300:  # if longer than 300, won't work
+                        self.error(
+                            "ERROR: One (or more) of your IDs is longer than 300 characters. The QR Code(s) won't work, please shorten your ID(s).",
+                            168)
+                        self.array_of_codes = []
+                        return
+                    shorten_file_name = False
+                    if len(qr_code_text) > 161:  # if qr code text is longer than 161chars warn user
+                        self.error(
+                            "WARNING: One (or more) of your IDs is longer than 161 characters. The QR Code(s) will function correctly, but the filename(s) will be shortened.",
+                            168)
+                        shorten_file_name = True
+
+                    if self.ids.gencsv.active:  # if generate csv was selected, generate the csv file
                         self.generate_csv(csv_file_name, qr_code_text)
 
+                    # Make the QR Code
                     qr = qrcode.QRCode(
                         version=1,
                         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -235,11 +281,15 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
+
+                    if shorten_file_name:  # if code longer than 161 chars, save filename as max of 161 chars
+                        file_name = f"{qr_code_text[0:161]}.jpg"
                     if self.ids.individualcodes.active:
                         if self.save_folder_path is not None and self.save_folder_path is not "":
                             file_name = f"{self.save_folder_path}/{file_name}"
                     else:
                         file_name = f"Temp/{file_name}"
+
                     img.save(file_name)  # save qr code as a jpg file
 
                     # Draw label on image
@@ -263,6 +313,23 @@ class MainScreenWidget(BoxLayout):
                 for line in input_csv:
                     qr_code_text = line.replace(",", "-")[:len(line) - 1]
 
+                    if '\t' in qr_code_text or '\n' in qr_code_text or ':' in qr_code_text or '/' in qr_code_text or '\\' in qr_code_text or '*' in qr_code_text or '?' in qr_code_text or '\"' in qr_code_text or '<' in qr_code_text or '>' in qr_code_text or '|' in qr_code_text or qr_code_text == "":
+                        self.error("ERROR: CSV file cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.", 153)
+                        return
+
+                    if len(qr_code_text) > 300:  # if longer than 300, won't work
+                        self.error(
+                            "ERROR: One (or more) of your CSV file IDs is longer than 300 characters. The QR Code(s) won't work, please shorten your ID(s).",
+                            168)
+                        self.array_of_codes = []
+                        return
+                    shorten_file_name = False
+                    if len(qr_code_text) > 161:  # if qr code text is longer than 161chars warn user
+                        self.error(
+                            "WARNING: One (or more) of your CSV file IDs is longer than 161 characters. The QR Code(s) will function correctly, but the filename(s) will be shortened.",
+                            168)
+                        shorten_file_name = True
+
                     qr = qrcode.QRCode(
                         version=1,
                         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -275,11 +342,15 @@ class MainScreenWidget(BoxLayout):
 
                     img = qr.make_image()
                     file_name = f"{qr_code_text}.jpg"
+
+                    if shorten_file_name:  # if code longer than 161 chars, save filename as max of 161 chars
+                        file_name = f"{qr_code_text[0:161]}.jpg"
                     if self.ids.individualcodes.active:
                         if self.save_folder_path is not None and self.save_folder_path is not "":
                             file_name = f"{self.save_folder_path}/{file_name}"
                     else:
                         file_name = f"Temp/{file_name}"
+
                     img.save(file_name)  # save qr code as a jpg file
 
                     # Draw label on image
@@ -452,6 +523,13 @@ class MainScreenWidget(BoxLayout):
             row_index_to_edit = int(row.ids.rownumber.text) - 1  # get the index to edit in the array
             self.text_input_array[row_index_to_edit].remove(self.text_input_array[row_index_to_edit][col.parent.col_count])  # remove last col from array
 
+    def error(self, message, height=137):
+        error_widget = ErrorWidget()
+        error_widget.error_widget_popup = Popup(title=message, content=error_widget, size_hint=(None, None),
+                                                size=(417, height), auto_dismiss=True)
+        error_widget.error_widget_popup.open()
+        return True
+
     def exit(self, *args):
         exit_widget = ExitWidget()
         exit_widget.exit_widget_popup = Popup(title="                             Are you sure you want to quit?\n"
@@ -494,6 +572,10 @@ class FileSettingsWidget(BoxLayout):
             self.ids.folderpath.text = "No folder selected, default is root folder."
         else:
             self.ids.folderpath.text = self.main_screen.save_folder_path
+
+
+class ErrorWidget(BoxLayout):
+    error_widget_popup = None
 
 
 class ExitWidget(BoxLayout):

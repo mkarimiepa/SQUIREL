@@ -318,11 +318,22 @@
             on_release: root.call_create()
             on_release: root.file_settings_popup.dismiss()
         Button:
-            text: "No"
+            text: "Cancel"
             size_hint: None, None
             size: 312, 50
             on_release: root.file_settings_popup.dismiss()
             halign: 'right'
+
+<ErrorWidget>:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            id: error_widget_button
+            text: "OK"
+            size_hint: None, None
+            size: 392, 70
+            on_release: root.error_widget_popup.dismiss()
 
 <ExitWidget>:
     orientation: 'vertical'
