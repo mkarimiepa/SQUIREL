@@ -41,7 +41,7 @@ os.environ['KIVY_GL_BACKEND'] = 'angle_sdl2'
 
 
 class MainScreenWidget(BoxLayout):
-    file_settings_widget = None
+    file_settings_widget = None  # the widget that allows user to choose layout, save location, and create/cancel
 
     row_count = 0  # num of rows
     number_count = 1  # where the current number id is
@@ -101,40 +101,40 @@ class MainScreenWidget(BoxLayout):
 
     def __init__(self, **kwargs):
         super(MainScreenWidget, self).__init__(**kwargs)
-        Window.bind(on_request_close=self.exit)
+        Window.bind(on_request_close=self.exit)  # calls exit function when 'X' is pressed
 
-    def preview_right(self):
+    def preview_right(self):  # allows user to see preview image to the right
         preview_image = self.ids.previewimage  # set the preview image
         if self.preview_images_array[self.curr_preview_img_index + 1] != '':
             self.curr_preview_img_index += 1  # if there is an img to the right, increment to go right
         preview_image.source = self.preview_images_array[self.curr_preview_img_index]  # set new img as preview img
 
-    def preview_left(self):
+    def preview_left(self):  # allows user to see preview image to the left
         preview_image = self.ids.previewimage  # set the preview image
         if self.preview_images_array[self.curr_preview_img_index - 1] != '' and (self.curr_preview_img_index - 1) >= 0:
             self.curr_preview_img_index -= 1  # if there is an img to the left, decrement to go left
         preview_image.source = self.preview_images_array[self.curr_preview_img_index]  # set new img as preview img
 
-    def set_preview(self):
+    def set_preview(self):  # sets the preview images
         i = 0
-        for row in self.text_input_array:
+        for row in self.text_input_array:  # run through the cols in each row
             qr_code_text = ""
             for col in row:
-                if col == row[0]: continue
-                if col == row[1]:
+                if col == row[0]: continue  # ignore #codes col
+                if col == row[1]:  # error handling for whats not allowed in cols
                     if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
                         self.error(
                             "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
                             153)
                         return
                     qr_code_text = f"{col.text}"
-                else:
+                else:  # error handling for whats not allowed in cols
                     if '\t' in col.text or '\n' in col.text or ':' in col.text or '/' in col.text or '\\' in col.text or '*' in col.text or '?' in col.text or '\"' in col.text or '<' in col.text or '>' in col.text or '|' in col.text or col.text == "":
                         self.error(
                             "ERROR: Columns cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.",
                             153)
                         return
-                    qr_code_text = f"{qr_code_text}-{col.text}"
+                    qr_code_text = f"{qr_code_text}-{col.text}"  # set qr code text based on cols if no issues
 
                     # Replace any ids in the text with the appropriate sequential or random number/alphabet letter
                     if "#num_seq" in qr_code_text:  # replace user placeholder '#num_seq' w/number
@@ -151,7 +151,7 @@ class MainScreenWidget(BoxLayout):
                         rand_letter = random.choice(self.letter_array)
                         qr_code_text = qr_code_text.replace("#alpha_rand", f"{rand_letter}")
 
-            if len(qr_code_text) > 300:  # if longer than 300, won't work
+            if len(qr_code_text) > 300:  # if code text longer than 300, won't work
                 self.error("ERROR: One (or more) of your IDs is longer than 300 characters. The QR Code(s) won't work, please shorten your ID(s).", 168)
                 return
             shorten_file_name = False
@@ -167,7 +167,7 @@ class MainScreenWidget(BoxLayout):
                 border=4
             )
 
-            qr.add_data(qr_code_text)
+            qr.add_data(qr_code_text)  # add qr text to code
             qr.make(fit=True)
 
             img = qr.make_image()
@@ -193,7 +193,7 @@ class MainScreenWidget(BoxLayout):
 
         self.curr_preview_img_index = i  # the current preview image displayed is the last one that was created
 
-    def create_popup(self):
+    def create_popup(self):  # creates the file settings widget popup with more pdf creation options
         self.file_settings_widget = FileSettingsWidget()
         self.file_settings_widget.main_screen = self
         self.file_settings_widget.file_settings_popup = Popup(title="                             Are you sure you want to create?",
@@ -202,8 +202,8 @@ class MainScreenWidget(BoxLayout):
         self.file_settings_widget.file_settings_popup.open()
         return True
 
-    def create(self):
-        if self.uploaded_file_path is None or self.uploaded_file_path == "":
+    def create(self):  # creates the qr codes
+        if self.uploaded_file_path is None or self.uploaded_file_path == "":  # if no csv file uploaded
             t = datetime.now()
             csv_file_name = f"SQUIRELQRCodes-{t.year}-{t.month}-{t.day}-{t.hour}_{t.minute}_{t.second}.csv"
             for row in self.text_input_array:
@@ -211,7 +211,7 @@ class MainScreenWidget(BoxLayout):
                 num_codes = int(row[0].children[0].text)
 
                 for _ in range(num_codes):
-                    qr_code_text = ""
+                    qr_code_text = ""  # this part same as in set_preview()
                     for col in row:
                         if col == row[0]: continue
                         if col == row[1]:
@@ -260,7 +260,7 @@ class MainScreenWidget(BoxLayout):
                         self.error(
                             "ERROR: One (or more) of your IDs is longer than 300 characters. The QR Code(s) won't work, please shorten your ID(s).",
                             168)
-                        self.array_of_codes = []
+                        self.array_of_codes = []  # if error occurs, be sure to reset these vars so works on next create
                         self.code_labels_array = []
                         return
                     shorten_file_name = False
@@ -281,7 +281,7 @@ class MainScreenWidget(BoxLayout):
                         border=4
                     )
 
-                    qr.add_data(qr_code_text)
+                    qr.add_data(qr_code_text)  # add code text, then make
                     qr.make(fit=True)
 
                     img = qr.make_image()
@@ -306,7 +306,7 @@ class MainScreenWidget(BoxLayout):
                         img = Image.open(file_name)
                         draw = ImageDraw.Draw(img)
                         font = ImageFont.truetype("arial", 21)
-                        color = 0
+                        color = 0  # line below prints qr code text on top of code but separates it into 3 lines if long
                         draw.text((37, -6), f"{qr_code_text[:32]}\n{qr_code_text[32:64]}\n{qr_code_text[64:]}", font=font, fill=color)
                         img.save(file_name)
 
@@ -321,8 +321,9 @@ class MainScreenWidget(BoxLayout):
         else:  # if there is an uploaded file, use that to gen qrcodes instead
             with open(self.uploaded_file_path, "r") as input_csv:
                 for line in input_csv:
-                    qr_code_text = line.replace(",", "-")[:len(line) - 1]
+                    qr_code_text = line.replace(",", "-")[:len(line) - 1]  # get cols from csv file
 
+                    # Error handling below
                     if '\t' in qr_code_text or '\n' in qr_code_text or ':' in qr_code_text or '/' in qr_code_text or '\\' in qr_code_text or '*' in qr_code_text or '?' in qr_code_text or '\"' in qr_code_text or '<' in qr_code_text or '>' in qr_code_text or '|' in qr_code_text or qr_code_text == "":
                         self.error("ERROR: CSV file cannot be empty, nor contain tabs, newlines, or these characters: :, /, \\, *, ?, \", <, >, |.", 153)
                         return
@@ -348,7 +349,7 @@ class MainScreenWidget(BoxLayout):
                         border=4
                     )
 
-                    qr.add_data(qr_code_text)
+                    qr.add_data(qr_code_text)  # add data and make qr code
                     qr.make(fit=True)
 
                     img = qr.make_image()
@@ -376,7 +377,7 @@ class MainScreenWidget(BoxLayout):
                         color = 0
 
                         draw.text((37, -6), f"{qr_code_text[:32]}\n{qr_code_text[32:64]}\n{qr_code_text[64:]}",
-                                  font=font, fill=color)
+                                  font=font, fill=color)  # print label on top of qr code and split into 3 lines if long
                         img.save(file_name)
 
                     self.array_of_codes.append(file_name)  # add to array of codes to be printed to pdf
@@ -385,10 +386,10 @@ class MainScreenWidget(BoxLayout):
         self.create_pdf()
 
     def create_pdf(self):
-        pdf = FPDF(orientation='P')
+        pdf = FPDF(orientation='P')  # start PDF, set to portrait, add page
         pdf.add_page()
         x, y = (5.0, 5.0)
-        pdf.set_xy(x, y)
+        pdf.set_xy(x, y)  # set x and y coordinates for printing
 
         # Set up variables based on layout chosen by user
         layout = self.file_settings_widget.ids.pdflayout.text
@@ -451,7 +452,7 @@ class MainScreenWidget(BoxLayout):
                 num_codes_to_arbitrarily_print = 18  # if the num codes greater than 18, keep it to 18 as that's all I need
             for j in range(num_codes_to_arbitrarily_print):  # print qr codes to pdf file
                 code = self.array_of_codes[j]
-                pdf.image(code, w=w, h=h)
+                pdf.image(code, w=w, h=h)  # print qr code to pdf
 
                 pdf.set_xy(5.0,
                            5.0)  # the farthest point you can go here is (275, -195) (really 280, -200 but the starting x,y points are also to be taken into account
@@ -461,7 +462,7 @@ class MainScreenWidget(BoxLayout):
                 pdf.rotate(0)  # undo rotation
 
                 num_in_page += 1
-                x += x_change
+                x += x_change  # adjust values of vars for the next code so it is printed correctly
                 if num_in_row == max_in_row: x = 5.0; y += y_change; num_in_row = -1; row_num += 1  # when maxnum codes are printed in a row, move to next row
                 if num_in_page == max_in_pg: y = 5.0; pdf.add_page(); num_in_page = 0; row_num = 0  # when max codes in page are printed in pg, move to nxt pg
                 pdf.set_xy(x, y)
@@ -479,7 +480,7 @@ class MainScreenWidget(BoxLayout):
         num_in_page = 0  # used to measure how many will fit in a pg
         i = 0  # index used to keep track of array_of_codes position for labels
         for code in self.array_of_codes:  # print qr codes to pdf file
-            pdf.image(code, w=w, h=h)
+            pdf.image(code, w=w, h=h)  # print code to pdf
 
             if layout == "Landscape Text":
                 pdf.set_xy(5.0,
@@ -499,7 +500,7 @@ class MainScreenWidget(BoxLayout):
                 pdf.rotate(0)  # undo rotation
 
             num_in_page += 1
-            x += x_change
+            x += x_change  # update vars so next code printed correctly
             if num_in_row == max_in_row: x = 5.0; y += y_change; num_in_row = -1; row_num += 1  # when maxnum codes are printed in a row, move to next row
             if num_in_page == max_in_pg:  # when max codes in page are printed in pg, move to nxt pg
                 y = 5.0; num_in_page = 0; row_num = 0
@@ -525,20 +526,20 @@ class MainScreenWidget(BoxLayout):
             file_name = f"{self.save_folder_path}/{file_name}"
         pdf.output(file_name, 'F').encode('latin-1')  # output final PDF file
 
-    def generate_csv(self, csv_file_path, qr_code_text):
+    def generate_csv(self, csv_file_path, qr_code_text):  # generates a csv file based on the columns and rows we have
         if self.save_folder_path is not None and self.save_folder_path is not "":
             csv_file_path = f"{self.save_folder_path}/{csv_file_path}"
         with open(csv_file_path, "a") as csv:
             qr_code_text = qr_code_text.replace("-", ",")
             csv.write(qr_code_text + "\n")
 
-    def upload(self):
+    def upload(self):  # upload a csv file from which to generate qr codes
         Tk().withdraw()  # keep root window form appearing as we don't want full GUI
         self.uploaded_file_path = filedialog.askopenfilename()
         if self.uploaded_file_path == "":  # if canceled change back to default
             self.ids.uploadedfilename.text = "No file uploaded."
             self.ids.uploadedfilename.pos = (155, 5)
-        elif ".csv" not in self.uploaded_file_path:
+        elif ".csv" not in self.uploaded_file_path:  # error if not a csv file
             self.ids.uploadedfilename.text = "Must be a CSV file."
             self.ids.uploadedfilename.pos = (155, 5)
             self.uploaded_file_path = None
@@ -547,11 +548,11 @@ class MainScreenWidget(BoxLayout):
             self.ids.uploadedfilename.text = string_arr[len(string_arr) - 1]
             self.ids.uploadedfilename.pos = (270, 5)
 
-    def add_row(self):
-        if self.row_count + 1 <= 20:
+    def add_row(self):  # add a new row
+        if self.row_count + 1 <= 20:  # can't have more than 20 rows
             self.row_count += 1
             new_row = RowWidget()
-            new_row.main_screen = self
+            new_row.main_screen = self  # set this so that row can access main screen widget
 
             # set row number
             new_row.children[2].text = f"{self.row_count}"
@@ -570,11 +571,11 @@ class MainScreenWidget(BoxLayout):
             new_buttons.main_screen = self  # set main_screen
             new_row.add_widget(new_buttons)
 
-            rows_section = self.ids.middlesection
+            rows_section = self.ids.middlesection  # get id of rowsection to add stuff to it
             rows_section.add_widget(new_row)  # add new row to UI
             self.text_input_array.append(new_row_array)  # add new row to internal arr
 
-    def remove_row(self):
+    def remove_row(self):  # remove row
         if self.row_count - 1 != 0:  # doesn't remove anything if only one row is left
             rows_section = self.ids.middlesection
             rows_section.remove_widget(rows_section.children[0])  # remove end widget by removing widget at 0 position
@@ -583,7 +584,7 @@ class MainScreenWidget(BoxLayout):
             self.preview_images_array.remove(self.preview_images_array[self.row_count])  # remove file from preview arr
             self.curr_preview_img_index = 0  # set this to 0 so it doesn't get stuck on an img that no longer exists
 
-    def add_col(self, col):
+    def add_col(self, col):  # add a col
         if col.parent.col_count + 1 <= 20:
             col.parent.col_count += 1
 
@@ -602,7 +603,7 @@ class MainScreenWidget(BoxLayout):
 
             self.text_input_array[row_index_to_edit].append(new_col)  # add newcol to its row in the array
 
-    def remove_col(self, col):
+    def remove_col(self, col):  # remove a col
         if col.parent.col_count - 1 != 1:  # doesn't remove anything if only 2 col are left
             col.parent.col_count -= 1  # decrement count of cols
 
@@ -612,14 +613,14 @@ class MainScreenWidget(BoxLayout):
             row_index_to_edit = int(row.ids.rownumber.text) - 1  # get the index to edit in the array
             self.text_input_array[row_index_to_edit].remove(self.text_input_array[row_index_to_edit][col.parent.col_count])  # remove last col from array
 
-    def error(self, message, height=137):
+    def error(self, message, height=137):  # Function used to display an error to the user, can pass in any message
         error_widget = ErrorWidget()
         error_widget.error_widget_popup = Popup(title=message, content=error_widget, size_hint=(None, None),
                                                 size=(417, height), auto_dismiss=True)
         error_widget.error_widget_popup.open()
         return True
 
-    def exit(self, *args):
+    def exit(self, *args):  # this function exits from the software
         exit_widget = ExitWidget()
         exit_widget.exit_widget_popup = Popup(title="                             Are you sure you want to quit?\n"
                                                     "                                 (unsaved data will be lost)",
@@ -629,7 +630,7 @@ class MainScreenWidget(BoxLayout):
         return True
 
 
-class RowWidget(StackLayout):
+class RowWidget(StackLayout):  # the row widget class, and the current number of cols for each row
     col_count = 2
 
 
@@ -640,21 +641,21 @@ class ColWidget(TextInput):
 class AddRemoveColWidget(BoxLayout):
     main_screen = None
 
-    def call_add_col(self):
+    def call_add_col(self):  # .kv file calls this method, which then calls add_col()
         self.main_screen.add_col(self)
 
-    def call_remove_col(self):
+    def call_remove_col(self):  # .kv file calls this method, which then calls remove_col()
         self.main_screen.remove_col(self)
 
 
-class FileSettingsWidget(BoxLayout):
+class FileSettingsWidget(BoxLayout):  # widget for options user has when creating pdf/codes
     main_screen = None
     file_settings_popup = None
 
-    def call_create(self):
+    def call_create(self):  # .kv file calls this method which calls create()
         self.main_screen.create()
 
-    def choose_save_folder(self):
+    def choose_save_folder(self):  # this functions allows user to choose save directory for the qr codes and pdf
         Tk().withdraw()
         self.main_screen.save_folder_path = filedialog.askdirectory()
         if self.main_screen.save_folder_path is None and self.main_screen.save_folder_path is "":
