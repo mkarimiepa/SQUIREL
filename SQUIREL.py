@@ -521,7 +521,8 @@ class MainScreenWidget(BoxLayout):
                 except: continue
         self.array_of_codes = []  # empty the array_of_codes array for the next create
 
-        file_name = "test3.pdf"
+        t = datetime.now()
+        file_name = f"SQUIRELOutput-{t.year}-{t.month}-{t.day}-{t.hour}_{t.minute}_{t.second}.pdf"
         if self.save_folder_path is not None and self.save_folder_path is not "":
             file_name = f"{self.save_folder_path}/{file_name}"
         pdf.output(file_name, 'F').encode('latin-1')  # output final PDF file
