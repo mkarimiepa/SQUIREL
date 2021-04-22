@@ -1,5 +1,5 @@
 <MainScreenWidget>:
-    id: main
+    id: main  # whole window
     orientation: 'vertical'
     background_color: (0, 255, 255, 1)
     ScreenWidget:
@@ -10,12 +10,12 @@
             id: mainbox
             orientation: 'vertical'
             BoxLayout:
-                id: topsection
+                id: topsection  # top third of the app
                 orientation: 'vertical'
                 size_hint: None, None
                 size: 1000, 250
                 BoxLayout:
-                    id: textandimagesection
+                    id: textandimagesection  # section with title and preview images
                     orientation: 'horizontal'
                     size_hint: None, None
                     size: 1000, 200
@@ -56,7 +56,7 @@
                                 width: 1.1
                                 rectangle: self.x, self.y, self.width, self.height
                     BoxLayout:
-                        id: imagelabelandbuttonssection
+                        id: imagelabelandbuttonssection  # preview image section
                         orientation: 'vertical'
                         size_hint: None, None
                         size: 300, 200
@@ -111,7 +111,7 @@
                             width: 1.1
                             rectangle: self.x, self.y, self.width, self.height
                 BoxLayout:
-                    id: checkboxessection
+                    id: checkboxessection  # section with check boxes
                     orientation: 'horizontal'
                     size_hint: None, None
                     size: 1000, 50
@@ -135,7 +135,7 @@
                         text: "Individual QR Codes"
                         size_hint: None, None
                         size: 120, 50
-                    FloatLayout:
+                    FloatLayout:  # contains the add and remove row btns
                         id: addremovesection
                         #orientation: 'horizontal'
                         size_hint: None, None
@@ -153,7 +153,7 @@
                             pos: 890, 270
                             on_release: root.remove_row();
             BoxLayout:
-                id: boxlayoutformiddlesection
+                id: boxlayoutformiddlesection  # middle third of app
                 orientation: 'horizontal'
                 size_hint: None, None
                 size: 1000, 200
@@ -161,7 +161,7 @@
                     id: justplaceholder
                     size_hint: None, None
                     size: 5, 200
-                ScreenWidget:
+                ScreenWidget:  # this contains the rows and columns
                     do_scroll_x: True
                     do_scroll_y: True
                     bar_width: 5
@@ -173,7 +173,7 @@
                         size_hint: None, None
                         size: 4295, 1050
             FloatLayout:
-                id: bottomsection
+                id: bottomsection  # this contains the lower third of the app
                 #orientation: 'horizontal'
                 size_hint: None, None
                 size: 1000, 50
@@ -214,7 +214,7 @@
                     pos: 800, 5
                     on_release: root.create_popup();
 
-<RowWidget>:
+<RowWidget>:  # the row widget which is instantiated and more of which are added and removed
     orientation: 'lr-tb'
     size_hint: None, None
     size: 4175, 50
@@ -247,13 +247,13 @@
         size_hint: None, None
         size: 200, 50
 
-<ColWidget>:
+<ColWidget>:  # colwidget that is instantiated and added/removed, is added to rowwidget above
     id: newcol
     text: ""
     size_hint: None, None
     size: 200, 50
 
-<AddRemoveColWidget>:
+<AddRemoveColWidget>:  # widget that has adding and removing column btns
     id: addremovecols
     orientation: 'vertical'
     size_hint: None, None
@@ -269,7 +269,7 @@
         size: 120, 25
         on_release: root.call_remove_col();
 
-<FileSettingsWidget>:
+<FileSettingsWidget>:  # widget for pdf creation options
     orientation: 'vertical'
     BoxLayout:
         id: firsthorizontalbox
@@ -325,7 +325,7 @@
             on_release: root.file_settings_popup.dismiss()
             halign: 'right'
 
-<ErrorWidget>:
+<ErrorWidget>:  # widget that is used to display an error msg to user
     orientation: 'vertical'
     BoxLayout:
         orientation: 'vertical'
@@ -336,7 +336,7 @@
             size: 392, 70
             on_release: root.error_widget_popup.dismiss()
 
-<ExitWidget>:
+<ExitWidget>:  # widget that comes up when 'X' btn is closed
     orientation: 'vertical'
     BoxLayout:
         orientation: 'horizontal'

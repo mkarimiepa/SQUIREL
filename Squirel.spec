@@ -61,7 +61,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=True )
-coll = COLLECT(exe, 'C:/Users/mkarimi/PycharmProjects/SQUIREL/SQUIREL.py', 'C:/Users/mkarimi/PycharmProjects/SQUIREL/squirel.kv', 'C:/Users/mkarimi/PycharmProjects/SQUIREL/Squirel.spec', 'C:/Users/mkarimi/PycharmProjects/SQUIREL/Temp',
+coll = COLLECT(exe, Tree('C:/Users/mkarimi/PycharmProjects/SQUIREL'),
                a.binaries,
                a.zipfiles,
                a.datas,
